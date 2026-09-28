@@ -74,46 +74,96 @@ export default function AuthenticatedLayout({ header, children }) {
                                         Sertifikat Saya
                                     </NavLink>
                                 )}
+
+                                {(role === 'instructor' || role === 'admin') && (
+                                    <NavLink
+                                        href={route('instructor.courses.index')}
+                                        active={route().current('instructor.*')}
+                                        className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium"
+                                    >
+                                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                        </svg>
+                                        Kelola Kelas
+                                    </NavLink>
+                                )}
                             </div>
                         </div>
 
                         {/* User menu & Role badge */}
-                        <div className="hidden sm:flex sm:items-center sm:gap-4">
-                            {getRoleBadge(role)}
+                        
+{/* User menu & Role badge */}
+<div className="hidden sm:flex sm:items-center sm:gap-4">
+    {user ? (
+        <>
+            {getRoleBadge(role)}
 
-                            <div className="relative">
-                                <Dropdown>
-                                    <Dropdown.Trigger>
-                                        <button
-                                            type="button"
-                                            className="inline-flex items-center gap-2 rounded-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/80 px-3.5 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
-                                        >
-                                            <div className="h-7 w-7 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-bold flex items-center justify-center text-xs">
-                                                {user.name.charAt(0)}
-                                            </div>
-                                            <span>{user.name}</span>
-                                            <svg className="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
-                                                <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                                            </svg>
-                                        </button>
-                                    </Dropdown.Trigger>
-
-                                    <Dropdown.Content width="48">
-                                        <div className="px-4 py-2 border-b border-slate-100 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400">
-                                            Masuk sebagai <strong className="text-slate-700 dark:text-slate-200">{user.email}</strong>
-                                        </div>
-                                        <Dropdown.Link href={route('profile.edit')} className="flex items-center gap-2">
-                                            <UserIcon className="h-4 w-4 text-slate-400" />
-                                            Profil Saya
-                                        </Dropdown.Link>
-                                        <Dropdown.Link href={route('logout')} method="post" as="button" className="flex items-center gap-2 text-red-600 dark:text-red-400">
-                                            <LogOut className="h-4 w-4" />
-                                            Keluar (Log Out)
-                                        </Dropdown.Link>
-                                    </Dropdown.Content>
-                                </Dropdown>
+            <div className="relative">
+                <Dropdown>
+                    <Dropdown.Trigger>
+                        <button
+                            type="button"
+                            className="inline-flex items-center gap-2 rounded-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/80 px-3.5 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                        >
+                            <div className="h-7 w-7 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-bold flex items-center justify-center text-xs">
+                                {(user.name || user.email || 'U')
+                                    .charAt(0)
+                                    .toUpperCase()}
                             </div>
+
+                            <span>
+                                {user.name || 'Pengguna'}
+                            </span>
+
+                            <svg
+                                className="h-4 w-4 text-slate-400"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                            >
+                                <path
+                                    fillRule="evenodd"
+                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                    clipRule="evenodd"
+                                />
+                            </svg>
+                        </button>
+                    </Dropdown.Trigger>
+
+                    <Dropdown.Content width="48">
+                        <div className="px-4 py-2 border-b border-slate-100 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400">
+                            Masuk sebagai{' '}
+                            <strong className="text-slate-700 dark:text-slate-200">
+                                {user.email || '-'}
+                            </strong>
                         </div>
+
+                        <Dropdown.Link
+                            href={route('profile.edit')}
+                            className="flex items-center gap-2"
+                        >
+                            <UserIcon className="h-4 w-4 text-slate-400" />
+                            Profil Saya
+                        </Dropdown.Link>
+
+                        <Dropdown.Link
+                            href={route('logout')}
+                            method="post"
+                            as="button"
+                            className="flex items-center gap-2 text-red-600 dark:text-red-400"
+                        >
+                            <LogOut className="h-4 w-4" />
+                            Keluar (Log Out)
+                        </Dropdown.Link>
+                    </Dropdown.Content>
+                </Dropdown>
+            </div>
+        </>
+    ) : (
+        <span className="text-sm text-slate-500 dark:text-slate-400">
+            Pengguna belum terautentikasi
+        </span>
+    )}
+</div>
 
                         {/* Mobile menu button */}
                         <div className="-me-2 flex items-center sm:hidden">
@@ -142,6 +192,11 @@ export default function AuthenticatedLayout({ header, children }) {
                         {role === 'student' && (
                             <ResponsiveNavLink href={route('certificates.index')} active={route().current('certificates.*')}>
                                 Sertifikat Saya
+                            </ResponsiveNavLink>
+                        )}
+                        {(role === 'instructor' || role === 'admin') && (
+                            <ResponsiveNavLink href={route('instructor.courses.index')} active={route().current('instructor.*')}>
+                                Kelola Kelas
                             </ResponsiveNavLink>
                         )}
                         <div className="pt-3 border-t border-slate-200 dark:border-slate-800">

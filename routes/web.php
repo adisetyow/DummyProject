@@ -5,11 +5,10 @@ use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DiscussionController;
+use App\Http\Controllers\Instructor\CourseBuilderController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuizController;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 Route::get('/', function () {
     return redirect()->route('courses.index');
@@ -52,5 +51,41 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+// ─── Instructor Course Builder ────────────────────────────────────────────────
+Route::middleware(['auth', 'role:admin|instructor'])
+    ->prefix('instructor')
+    ->name('instructor.')
+    ->group(function () {
+        // Courses CRUD
+        Route::get('/courses', [CourseBuilderController::class, 'index'])->name('courses.index');
+        Route::get('/courses/create', [CourseBuilderController::class, 'create'])->name('courses.create');
+        Route::post('/courses', [CourseBuilderController::class, 'store'])->name('courses.store');
+        Route::get('/courses/{course}/edit', [CourseBuilderController::class, 'edit'])->name('courses.edit');
+        Route::patch('/courses/{course}', [CourseBuilderController::class, 'update'])->name('courses.update');
+        Route::delete('/courses/{course}', [CourseBuilderController::class, 'destroy'])->name('courses.destroy');
+
+        // Modules
+        Route::post('/courses/{course}/modules', [CourseBuilderController::class, 'storeModule'])->name('modules.store');
+        Route::patch('/modules/{module}', [CourseBuilderController::class, 'updateModule'])->name('modules.update');
+        Route::delete('/modules/{module}', [CourseBuilderController::class, 'destroyModule'])->name('modules.destroy');
+
+        // Lessons
+        Route::post('/modules/{module}/lessons', [CourseBuilderController::class, 'storeLesson'])->name('lessons.store');
+        Route::patch('/lessons/{lesson}', [CourseBuilderController::class, 'updateLesson'])->name('lessons.update');
+        Route::delete('/lessons/{lesson}', [CourseBuilderController::class, 'destroyLesson'])->name('lessons.destroy');
+
+        // Quizzes
+        Route::post('/courses/{course}/quizzes', [CourseBuilderController::class, 'storeQuiz'])->name('quizzes.store');
+        Route::patch('/quizzes/{quiz}', [CourseBuilderController::class, 'updateQuiz'])->name('quizzes.update');
+        Route::delete('/quizzes/{quiz}', [CourseBuilderController::class, 'destroyQuiz'])->name('quizzes.destroy');
+        Route::post('/quizzes/{quiz}/questions', [CourseBuilderController::class, 'storeQuestion'])->name('questions.store');
+        Route::delete('/questions/{question}', [CourseBuilderController::class, 'destroyQuestion'])->name('questions.destroy');
+
+        // Assignments
+        Route::post('/courses/{course}/assignments', [CourseBuilderController::class, 'storeAssignment'])->name('assignments.store');
+        Route::patch('/assignments/{assignment}', [CourseBuilderController::class, 'updateAssignment'])->name('assignments.update');
+        Route::delete('/assignments/{assignment}', [CourseBuilderController::class, 'destroyAssignment'])->name('assignments.destroy');
+    });
 
 require __DIR__.'/auth.php';
